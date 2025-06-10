@@ -1,44 +1,46 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Image, Text, View, StyleSheet } from 'react-native'
 import { globalStyles } from '../styles/index'
 import { usePresupuesto } from '../hooks/usePresupuesto'
 import { FormatearCantidad } from '../helpers/FormatearCantidad'
+import { PresupuestoContext } from '../context/Presupuesto'
+import CircularProgress from 'react-native-circular-progress-indicator'
 
 export const ControlPresupuesto = () => {
-       const { presupuesto, gastos } = usePresupuesto()
-       const [disponible, setDisponible] = useState()
-       const [gastado, setGastado] = useState()
+       const { presupuesto, gastos } = useContext(PresupuestoContext)
+       const [disponible, setDisponible] = useState(0)
+       const [gastado, setGastado] = useState(0)
     
        useEffect(() => {
             const totalGastado = gastos.reduce( (total, gasto) => Number(gasto.cantidad) + total, 0 )
             const totalDisponible = presupuesto - totalGastado
             setGastado(totalGastado)
             setDisponible(totalDisponible)
-       }, [])
+       }, [gastos, presupuesto])
        
 
   return (
     <View style={styles.contenedor}>
         <View style={styles.centrarGrafica}>
-            <Image 
+            <CircularProgress 
+                value={gastado}
                 style={styles.imagen}
-                source={require('../img/grafico.jpg')} 
             />
         </View>
         <View  style={styles.contenedorTexto}>
             <Text style={styles.valor}>
                 <Text style={styles.label}>Presupuesto: </Text>
-                ${FormatearCantidad(presupuesto)}
+                {FormatearCantidad(Number(presupuesto))}
             </Text>
 
             <Text style={styles.valor}>
                 <Text style={styles.label}>Disponible: </Text>
-                ${FormatearCantidad(presupuesto)}
+                {FormatearCantidad(disponible)}
             </Text>
 
             <Text style={styles.valor}>
                 <Text style={styles.label}>Gastado: </Text>
-                ${FormatearCantidad(presupuesto)}
+                {FormatearCantidad(gastado)}
             </Text>
         </View>
     </View>
@@ -53,14 +55,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     imagen: {
-        width: 250,
-        height: 250,
+        width: 200,
+        height: 200,
     },
     contenedorTexto: {
-        marginTop: 50,
+        marginTop: 20,
     },
     valor: {
-        fontSize: 24,
+        fontSize: 20,
         textAlign: 'center',
         marginBottom: 10,
     }, 

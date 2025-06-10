@@ -7,7 +7,6 @@ export function PresupuestoProvider ({ children }) {
     const [ isValid, setIsValid ] = useState(false)
     const [gastos, setGastos] = useState([])
     const [modalP, setModalP] = useState(false);
-    
   
     return (
     <PresupuestoContext.Provider value={{

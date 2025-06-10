@@ -1,17 +1,28 @@
-import React from 'react';
-import { PresupuestoProvider } from './src/context/Presupuesto';
+import React, { useState } from 'react';
+import { PresupuestoContext, PresupuestoProvider } from './src/context/Presupuesto';
 import { PresupuestoApp } from './src/components/PresupuestoApp';
-import { FormStateProvider } from './src/context/FormState';
-
+ 
 const App = () => {
   
+  const [presupuesto, setPresupuesto] = useState('')
+  const [ isValid, setIsValid ] = useState(false)
+  const [gastos, setGastos] = useState([])
+  const [gasto, setGasto] = useState({})
+      
 
   return (
-    <FormStateProvider>
-      <PresupuestoProvider>
+      <PresupuestoContext.Provider value={{
+            setPresupuesto,
+            presupuesto,
+            isValid, 
+            setIsValid,
+            gastos,
+            setGastos,
+            gasto, setGasto
+          }}
+          >
         <PresupuestoApp/>
-      </PresupuestoProvider>
-    </FormStateProvider>
+      </PresupuestoContext.Provider>
   );
 }
 

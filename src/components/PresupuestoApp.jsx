@@ -1,48 +1,69 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import {
   Image,
   Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
+import { usePresupuesto } from '../hooks/usePresupuesto';
+
 import { Headers } from './Headers';
 import { NuevoPresupuesto } from './NuevoPresupuesto';
 import { ControlPresupuesto } from './ControlPresupuesto';
-import { usePresupuesto } from '../hooks/usePresupuesto';
 import { FormularioGasto } from './FormularioGasto';
+import { PresupuestoContext } from '../context/Presupuesto';
+import { ListadoGastos } from './ListadoGastos';
 
 export const PresupuestoApp = () => {
  
-   const { isValid, modalP, setModalP } = usePresupuesto()
+   const { isValid } = useContext(PresupuestoContext)
+   const [modalGasto, setModalGasto] = useState(false)
+
  
+   const handleOpenModal = () => {
+     setModalGasto(true)
+   }
+
    return (
      <View style={styles.contenedor}>
-       <View style={styles.header}>
-          <Headers />
-          {isValid ? 
-            <ControlPresupuesto/>
-          : <NuevoPresupuesto />}
-       </View>
+      <ScrollView>
+        <View style={styles.header}>
+           <Headers />
+           {isValid ? 
+             <ControlPresupuesto/>
+           : <NuevoPresupuesto />}
+        </View>
 
-        {modalP && (
-          <Modal
-            animationType='slide'
-            visible={modalP}
-            onRequestClose={() => setModalP(!modalP)}
-          >
-            <FormularioGasto
-            />
-          </Modal>
-        )}
+        {isValid &&
+          <ListadoGastos
+            setModalGasto={setModalGasto} 
+          />
+        }
+
+      </ScrollView>
+
+      {modalGasto && (
+        <Modal
+          animationType='slide'
+          visible={modalGasto}
+        >
+          <FormularioGasto
+            setModalGasto={setModalGasto}
+          />
+        </Modal>
+      )}
+
        {isValid && 
        ( 
         <Pressable
-          onPress={() => setModalP(!modalP)}
+          style={styles.Pressable}
+          onPress={handleOpenModal()}
         >
           <Image
             style={styles.imagen}
-            source={require('..img/nuevo-gasto.png')}
+            source={require('../img/nuevo-gasto.png')}
           />
         </Pressable>
         )}
@@ -58,12 +79,17 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#3B82F6',
   },
+  Pressable: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    width: 60,
+    height: 60,
+  },
   imagen: {
     width: 60,
     height: 60,
-    position: 'absolute',
-    top: 120,
-    right: 20,
+    
   }
 });
  

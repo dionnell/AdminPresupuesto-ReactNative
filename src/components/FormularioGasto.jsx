@@ -1,27 +1,147 @@
 import { Picker } from '@react-native-picker/picker'
-import React from 'react'
-import { Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native'
+import React, { useContext, useEffect } from 'react'
+import { Alert, Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native'
 import { globalStyles } from '../styles/index'
 import { usePresupuesto } from '../hooks/usePresupuesto'
 import { useFormStateGasto } from '../hooks/useFormStateGasto'
+import { PresupuestoContext } from '../context/Presupuesto'
+import { GenerarID } from '../helpers/GenerarId'
 
-export const FormularioGasto = () => {
+export const FormularioGasto = ({setModalGasto}) => {
 
-    const { setModalP } = usePresupuesto()
-    const { nombre, setNombre, cantidad, setCantidad, categoria, setcategoria } = useFormStateGasto()
+    const { gastos ,setGastos, gasto, setGasto } = useContext(PresupuestoContext)
+    const { id, setId, fecha, setFecha,nombre, setNombre, cantidad, setCantidad, categoria, setcategoria, 
+        validarCampos ,validarCantidad, validarNombre, validarCategoria, resetForm } = useFormStateGasto()
+
+    useEffect(() => {
+      if (gasto?.id) {
+        setNombre(gasto.nombre)
+        setCantidad(gasto.cantidad.toString())
+        setcategoria(gasto.categoria)
+        setId(gasto.id)
+        setFecha(gasto.fecha)
+      }
+    }, [gasto])
+    
+    const handleCloseModal = () => {
+     setModalGasto(false)
+     resetForm()
+    }
+
+    const handleGasto = () => {
+
+        // Validaciones
+        if (validarCampos(nombre, cantidad, categoria) === false) {
+            return Alert.alert(
+                 'Error',
+                 'Todos los campos son obligatorios',
+                 [
+                   { text: 'OK' }
+                 ]
+               )
+        }
+
+        if(validarCantidad(cantidad) === false) {
+            return Alert.alert(
+                  'Error',
+                  'Cantidad de gasto no es válido',
+                  [
+                    { text: 'OK' }
+                  ]
+                )
+
+        }
+        if(validarNombre(nombre) === false) {
+            return Alert.alert(
+                 'Error',
+                 'El nombre del gasto debe tener al menos 3 caracteres',
+                 [
+                   { text: 'OK' }
+                 ]
+               )
+        }
+        if(validarCategoria(categoria) === false) {
+            return Alert.alert(
+                 'Error',
+                 'Debe seleccionar una categoría',
+                 [
+                   { text: 'OK' }
+                 ]
+               )
+        }
+
+        if (nombre && cantidad && categoria) {
+            
+            if (gasto.id) {
+                const actualizarGasto = gastos.map(gastoState =>
+                    gastoState.id === gasto.id ? gasto : gastoState
+                )
+                setGastos(actualizarGasto)
+
+            } else {
+                const nuevoGasto = {
+                    id: GenerarID(),
+                    fecha: Date.now(),
+                    nombre,
+                    cantidad: Number(cantidad),
+                    categoria,
+                }
+
+                setGastos(gastos => [...gastos, nuevoGasto])
+                resetForm();
+                Alert.alert(
+                    'Gasto Agregado',
+                    'El gasto se ha agregado correctamente',
+                    [
+                        { text: 'OK' }
+                    ]
+                )
+            }
+        }
+    }
+
+    const handleEliminarGasto = (id) => {
+        Alert.alert(
+            '¿Deseas eliminar este gasto?',
+            'Esta acción no se puede deshacer',
+            [
+                {
+                    text: 'Cancelar',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Eliminar',
+                    onPress: () => {
+                        const gastosActualizados = gastos.filter(gastoState => gastoState.id !== id)
+                        setGastos(gastosActualizados)
+                        setGasto({})
+                        resetForm();
+                        setModalGasto(false);
+                    },
+                    style: 'destructive',
+                },
+            ]
+        )
+    }
 
   return (
     <SafeAreaView style={styles.contenedor}>
-        <View>
+        <View style={styles.contenedorBotones}>
             <Pressable
-                onLongPress={() => setModalP(false)} 
-                style={styles.btnCancelar}>
-                <Text style={styles.btnCancelarTexto}>Cancelar</Text>
+                onPress={handleCloseModal()} 
+                style={[styles.btn,styles.btnCancelar]}>
+                <Text style={styles.btnTexto}>Cancelar</Text>
+            </Pressable>
+            <Pressable
+                onLongPress={handleEliminarGasto(id)} 
+                style={[styles.btn,styles.btnEliminar]}>
+                <Text style={styles.btnTexto}>Eliminar</Text>
             </Pressable>
         </View>
 
         <View style={styles.formulario}>
-            <Text style={styles.titulo}>Nuevo Gasto</Text>
+            <Text style={styles.titulo}>
+                {gasto?.nombre ? 'Editar Gasto' : 'Nuevo Gasto'}</Text>
 
             <View style={styles.campo}>
                 <Text style={styles.label}>Nombre del Gasto</Text>
@@ -49,9 +169,11 @@ export const FormularioGasto = () => {
                 <Picker
                     selectedValue={categoria}
                     onValueChange={(itemValue) => setcategoria(itemValue)}
-                    mode='dropdown'
+                    style={styles.inputPicker}
+                    dropdownIconColor='#64748B'
+                    //mode='dialog' // 'dialog' or 'dropdown'
                 >
-                    <Picker.Item label='-- Seleccione --' value='' />
+                    <Picker.Item label=' -- Seleccione --' value='' />
                     <Picker.Item label='Ahorro' value='ahorro' />
                     <Picker.Item label='Comida' value='comida' />
                     <Picker.Item label='Casa' value='casa' />
@@ -62,8 +184,12 @@ export const FormularioGasto = () => {
                 </Picker>
             </View>
 
-            <Pressable style={styles.submitBtn}>
-                <Text style={styles.submitBtnTexto}>Agregar Gasto</Text>
+            <Pressable 
+                style={styles.submitBtn}
+                onPress={handleGasto}
+            >
+                <Text style={styles.submitBtnTexto}>
+                    {gasto?.nombre ? 'Guardar Cambios' : 'Agregar Gasto'}</Text>
             </Pressable>
         </View>
     </SafeAreaView>
@@ -75,13 +201,25 @@ const styles = StyleSheet.create({
         backgroundColor: '#1E40AF',
         flex: 1,
     },
-    btnCancelar: {
-        backgroundColor: '#DB2777',
+    contenedorBotones: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginHorizontal: 10,
+    },
+    btn: {
         padding: 10,
         marginTop: 30,
         marginHorizontal: 10,
+        flex: 1,
+        borderRadius: 15,
     },
-    btnCancelarTexto: {
+    btnCancelar: {
+        backgroundColor: '#DB2777',
+    },
+    btnEliminar: {
+        backgroundColor: 'red',
+    },
+    btnTexto: {
         textAlign: 'center',
         color: '#fff',
         fontWeight: 'bold',
@@ -110,6 +248,11 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
         marginTop: 8,
+    },
+    inputPicker: {
+        backgroundColor: '#f5f5f5',
+        marginTop: 8,
+        color: '#64748B',
     },
     submitBtn: {
         backgroundColor: '#3B82F6',

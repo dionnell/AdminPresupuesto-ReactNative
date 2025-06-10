@@ -2,8 +2,10 @@ import React, { useContext } from 'react'
 import { PresupuestoContext } from '../context/Presupuesto'
 
 export function usePresupuesto  ()  {
-    const { presupuesto, setPresupuesto, setIsValid, isValid, gastos, setGastos, modalP, setModalP } = useContext(PresupuestoContext)
-    
+    const { presupuesto, setPresupuesto, setIsValid, isValid,
+       gastos, setGastos, gasto, setGasto } = useContext(PresupuestoContext)
+
+     
   return {
     presupuesto,
     setPresupuesto,
@@ -11,8 +13,7 @@ export function usePresupuesto  ()  {
     isValid,
     gastos, 
     setGastos,
-    modalP, 
-    setModalP
+    gasto, setGasto
   }
 }
 
