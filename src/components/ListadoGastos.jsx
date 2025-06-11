@@ -29,7 +29,7 @@ export const ListadoGastos = ({setModalGasto}) => {
 
         )}
 
-        {gastos.length === 0 || (gastosFiltrados === 0 && !!filtro) && ( 
+        {(gastos.length === 0 || (gastosFiltrados === 0 && !!filtro) ) && ( 
             <Text style={styles.noGastos}>No hay gastos registrados</Text>
         )}
     </View>

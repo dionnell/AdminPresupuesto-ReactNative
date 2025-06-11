@@ -15,7 +15,6 @@ export function PresupuestoProvider ({ children }) {
       setPresupuesto,presupuesto,
       isValid, setIsValid,
       gastos, setGastos,
-      modalP, setModalP,
       gasto, setGasto,
       filtro, setFiltro,
       gastoFiltrado, setGastoFiltrado

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   Image,
   Modal,
@@ -16,12 +16,73 @@ import { FormularioGasto } from './FormularioGasto';
 import { PresupuestoContext } from '../context/Presupuesto';
 import { ListadoGastos } from './ListadoGastos';
 import { Filtro } from './Filtro';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const PresupuestoApp = () => {
  
-   const { isValid } = useContext(PresupuestoContext)
+   const { isValid, setIsValid, presupuesto, setPresupuesto, gastos, setGastos } = usePresupuesto()
    const [modalGasto, setModalGasto] = useState(false)
 
+   useEffect(() => {
+      const obtenerPresupuestoStorage = async () => {
+        try {
+          const presupuestoStorage = await AsyncStorage.getItem('planificador_presupuesto') ?? 0
+
+          if(presupuestoStorage > 0){
+            setPresupuesto(presupuestoStorage)
+            setIsValid(true)
+          }
+        } catch (error) {
+          console.error('Error al obtener el presupuesto del almacenamiento:', error);
+        }
+      }
+      obtenerPresupuestoStorage();
+   }, [])
+   
+   useEffect(() => {
+     if( isValid) {
+       const guardarPresupuestoStorage = async () => {
+          try {
+            await AsyncStorage.setItem(
+              'planificador_presupuesto',
+              presupuesto
+            )
+          } catch (error) {
+            console.error('Error al guardar el presupuesto en el almacenamiento:', error);
+          }
+       }
+        guardarPresupuestoStorage();
+     }
+   }, [isValid])
+ 
+   useEffect(() => {
+     const obtenerGastosStorage = async () => {
+        try {
+          const gastosStorage = await AsyncStorage.getItem('planificador_gastos' )
+        
+          setGastos( gastosStorage ? JSON.parse(gastosStorage) : [])
+        } catch (error) {
+          console.log(error)
+        }
+     }
+     obtenerGastosStorage()
+   }, [])
+   
+
+   useEffect(() => {
+     const guardarGastosStorage = async() => {
+        try {
+          await AsyncStorage.setItem(
+            'planificador_gastos',
+            JSON.stringify(gastos)
+          )
+        } catch (error) {
+          console.log(error)
+        }
+     }
+     guardarGastosStorage()
+   }, [gastos])
+   
  
    const handleOpenModal = () => {
      setModalGasto(true)

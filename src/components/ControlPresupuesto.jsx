@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Image, Text, View, StyleSheet } from 'react-native'
+import { Text, View, StyleSheet, Pressable, Alert } from 'react-native'
 import { globalStyles } from '../styles/index'
 import { usePresupuesto } from '../hooks/usePresupuesto'
 import { FormatearCantidad } from '../helpers/FormatearCantidad'
 import { PresupuestoContext } from '../context/Presupuesto'
 import CircularProgress from 'react-native-circular-progress-indicator'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export const ControlPresupuesto = () => {
-       const { presupuesto, gastos } = useContext(PresupuestoContext)
+       const { presupuesto, setPresupuesto, gastos, setGastos, setIsValid } = usePresupuesto()
        const [disponible, setDisponible] = useState(0)
        const [gastado, setGastado] = useState(0)
        const [porcentaje, setPorcentaje] = useState(0)
@@ -24,7 +25,27 @@ export const ControlPresupuesto = () => {
             setGastado(totalGastado)
             setDisponible(totalDisponible)
        }, [gastos, presupuesto])
-       
+
+       const resetarApp = () => {
+            Alert.alert(
+                'Dedea resetear la App?',
+                'Esto eliminara el presupuesto y los gastos',
+                [
+                    {text: 'No', style: 'cancel'},
+                    {text: 'Si, Eliminar', style:'destructive', onPress: async () => {
+                        try {
+                            await AsyncStorage.clear()
+
+                            setIsValid(false)
+                            setPresupuesto(0)
+                            setGastos([])
+                        } catch (error) {
+                            console.log(error)
+                        }
+                    }}
+                ]
+            )
+       }
 
   return (
     <View style={styles.contenedor}>
@@ -45,6 +66,14 @@ export const ControlPresupuesto = () => {
             />
         </View>
         <View  style={styles.contenedorTexto}>
+            
+            <Pressable
+                onLongPress={resetarApp}
+                style={styles.boton}
+            >
+                <Text style={styles.TextoBoton}>Reiniciar App</Text>
+            </Pressable>
+
             <Text style={styles.valor}>
                 <Text style={styles.label}>Presupuesto: </Text>
                 {FormatearCantidad(Number(presupuesto))}
@@ -71,9 +100,17 @@ const styles = StyleSheet.create({
     centrarGrafica: {
         alignItems: 'center',
     },
-    imagen: {
-        width: 200,
-        height: 200,
+    boton: {
+        backgroundColor: '#DB2777',
+        padding: 10,
+        marginBottom: 30,
+        borderRadius: 10
+    },
+    TextoBoton: {
+        textAlign: 'center',
+        color: '#FFF',
+        fontWeight: 'bold',
+        textTransform: 'uppercase'
     },
     contenedorTexto: {
         marginTop: 20,

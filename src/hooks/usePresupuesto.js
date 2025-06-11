@@ -8,12 +8,9 @@ export function usePresupuesto  ()  {
 
      
   return {
-    presupuesto,
-    setPresupuesto,
-    setIsValid,
-    isValid,
-    gastos, 
-    setGastos,
+    presupuesto, setPresupuesto,
+    setIsValid, isValid,
+    gastos, setGastos,
     gasto, setGasto, 
     filtro, setFiltro,
     gastoFiltrado, setGastoFiltrado
