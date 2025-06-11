@@ -8,7 +8,8 @@ const App = () => {
   const [ isValid, setIsValid ] = useState(false)
   const [gastos, setGastos] = useState([])
   const [gasto, setGasto] = useState({})
-      
+  const [filtro, setFiltro] = useState('')    
+  const [gastoFiltrado, setGastoFiltrado] = useState([])
 
   return (
       <PresupuestoContext.Provider value={{
@@ -18,7 +19,9 @@ const App = () => {
             setIsValid,
             gastos,
             setGastos,
-            gasto, setGasto
+            gasto, setGasto,
+            filtro, setFiltro,
+            gastoFiltrado, setGastoFiltrado
           }}
           >
         <PresupuestoApp/>

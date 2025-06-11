@@ -3,7 +3,8 @@ import { PresupuestoContext } from '../context/Presupuesto'
 
 export function usePresupuesto  ()  {
     const { presupuesto, setPresupuesto, setIsValid, isValid,
-       gastos, setGastos, gasto, setGasto } = useContext(PresupuestoContext)
+       gastos, setGastos, gasto, setGasto,filtro, setFiltro,
+            gastoFiltrado, setGastoFiltrado } = useContext(PresupuestoContext)
 
      
   return {
@@ -13,7 +14,9 @@ export function usePresupuesto  ()  {
     isValid,
     gastos, 
     setGastos,
-    gasto, setGasto
+    gasto, setGasto, 
+    filtro, setFiltro,
+    gastoFiltrado, setGastoFiltrado
   }
 }
 

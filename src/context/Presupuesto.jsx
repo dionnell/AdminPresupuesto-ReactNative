@@ -6,18 +6,19 @@ export function PresupuestoProvider ({ children }) {
     const [presupuesto, setPresupuesto] = useState('')
     const [ isValid, setIsValid ] = useState(false)
     const [gastos, setGastos] = useState([])
-    const [modalP, setModalP] = useState(false);
+    const [gasto, setGasto] = useState({})
+    const [filtro, setFiltro] = useState('')    
+    const [gastoFiltrado, setGastoFiltrado] = useState([])
   
     return (
     <PresupuestoContext.Provider value={{
-      setPresupuesto,
-      presupuesto,
-      isValid, 
-      setIsValid,
-      gastos,
-      setGastos,
-      modalP, 
-      setModalP
+      setPresupuesto,presupuesto,
+      isValid, setIsValid,
+      gastos, setGastos,
+      modalP, setModalP,
+      gasto, setGasto,
+      filtro, setFiltro,
+      gastoFiltrado, setGastoFiltrado
     }}
     >
       {children}

@@ -4,28 +4,41 @@ import { PresupuestoContext } from '../context/Presupuesto'
 import { Gasto } from './Gasto'
 
 export const ListadoGastos = ({setModalGasto}) => {
-    const { gastos, setGastos } = useContext(PresupuestoContext)
+    const { gastos, setGastos, filtro, gastosFiltrados } = useContext(PresupuestoContext)
     
   return (
     <View style={styles.contenedor}>
       <Text style={styles.titulo}>Gastos</Text>
-        {gastos.length === 0 ? 
-            <Text style={styles.noGastos}>No hay gastos registrados</Text>
-            : gastos.map((gasto) => (
+        
+        {filtro ? gastosFiltrados.map( gasto => (
+            <Gasto
+                key={gasto.id}
+                gasto={gasto}
+                setGastos={setGastos}
+                setModalGasto={setModalGasto}
+            />
+        )) : (
+            gastos.map( gasto => (
                 <Gasto
                     key={gasto.id}
                     gasto={gasto}
                     setGastos={setGastos}
                     setModalGasto={setModalGasto}
                 />
-            ))}
+            ))
+
+        )}
+
+        {gastos.length === 0 || (gastosFiltrados === 0 && !!filtro) && ( 
+            <Text style={styles.noGastos}>No hay gastos registrados</Text>
+        )}
     </View>
   )
 }
 
 const styles = StyleSheet.create({
     contenedor: {
-        marginTop: 70,
+        marginTop: 20,
         marginBottom: 100
     },
     titulo: {

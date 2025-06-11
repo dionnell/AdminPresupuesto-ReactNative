@@ -132,11 +132,15 @@ export const FormularioGasto = ({setModalGasto}) => {
                 style={[styles.btn,styles.btnCancelar]}>
                 <Text style={styles.btnTexto}>Cancelar</Text>
             </Pressable>
-            <Pressable
-                onLongPress={handleEliminarGasto(id)} 
-                style={[styles.btn,styles.btnEliminar]}>
-                <Text style={styles.btnTexto}>Eliminar</Text>
-            </Pressable>
+
+            { !!id && 
+                <Pressable
+                    onLongPress={handleEliminarGasto(id)} 
+                    style={[styles.btn,styles.btnEliminar]}>
+                    <Text style={styles.btnTexto}>Eliminar</Text>
+                </Pressable>
+            }
+            
         </View>
 
         <View style={styles.formulario}>
